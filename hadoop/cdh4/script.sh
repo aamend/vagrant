@@ -214,7 +214,7 @@ echo "**************************************"
 
 sudo -u hdfs hadoop fs -mkdir -p /user/hive/warehouse
 sudo -u hdfs hadoop fs -chown hive /user/hive/warehouse
-sudo -u hdfs hadoop fs -chmod 1777 /user/hive/warehouse
+sudo -u hdfs hadoop fs -chmod -R 1777 /user/hive/warehouse
 
 echo "**************************************"
 echo "Install Hive Server + Metastore"
