@@ -16,6 +16,7 @@ fi
 echo "**************************************"
 echo "Install common packages"
 echo "**************************************"
+
 sudo apt-get install -y software-properties-common
 sudo apt-get install -y apt-file
 sudo apt-get install -y python-software-properties
@@ -25,16 +26,22 @@ sudo apt-get install -y wget
 echo "**************************************"
 echo "Install Cloudera repository"
 echo "**************************************"
-echo "deb [arch=amd64] http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh precise-cdh4 contrib" > /etc/apt/sources.list.d/cloudera-cdh4.list 
-echo "deb-src http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh precise-cdh4 contrib" >> /etc/apt/sources.list.d/cloudera-cdh4.list 
-echo "deb [arch=amd64] http://archive.cloudera.com/cm4/ubuntu/precise/amd64/cm precise-cm4 contrib" > /etc/apt/sources.list.d/cloudera-cm.list 
-echo "deb-src http://archive.cloudera.com/cm4/ubuntu/precise/amd64/cm precise-cm4 contrib" >> /etc/apt/sources.list.d/cloudera-cm.list
+
+cat > /etc/apt/sources.list.d/cloudera-cdh4.list << EOF
+deb [arch=amd64] http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh precise-cdh4 contrib
+deb-src http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh precise-cdh4 contrib
+EOF
+cat > /etc/apt/sources.list.d/cloudera-cm.list << EOF
+deb [arch=amd64] http://archive.cloudera.com/cm4/ubuntu/precise/amd64/cm precise-cm4 contrib
+deb-src http://archive.cloudera.com/cm4/ubuntu/precise/amd64/cm precise-cm4 contrib
+EOF
 curl -s http://archive.cloudera.com/cdh4/ubuntu/precise/amd64/cdh/archive.key | sudo apt-key add -
 sudo apt-get update
 
 echo "**************************************"
 echo "Install Hadoop packages"
 echo "**************************************"
+
 sudo apt-get install -y oracle-j2sdk1.6
 sudo apt-get install -y hadoop-hdfs-namenode
 sudo apt-get install -y hadoop-hdfs-datanode
@@ -46,6 +53,7 @@ sudo apt-get install -y hadoop-mapreduce
 echo "**************************************"
 echo "Create Hadoop disk /hadoop"
 echo "**************************************"
+
 sudo mkdir -p /hadoop/dfs/{nn,dn}
 sudo chown -R hdfs:hdfs /hadoop/dfs
 sudo chmod 700 /hadoop/dfs
@@ -68,75 +76,29 @@ ff02::1 ip6-allnodes
 ff02::2 ip6-allrouters
 EOF
 
-cat > /etc/hadoop/conf/slaves << EOF
-${VAGRANT_ETH1_IP}
-EOF
+echo ${VAGRANT_ETH1_IP} > /etc/hadoop/conf/slaves
 
-cat > /etc/hadoop/conf/core-site.xml << EOF
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-<configuration>
- <property>
-  <name>fs.defaultFS</name>
-  <value>hdfs://${VAGRANT_HOST}:8020</value>
- </property>
-</configuration>
-EOF
+sudo cp /vagrant/tmpl/core-site.xml /etc/hadoop/conf/core-site.xml
+sudo sed -i 's/VAGRANT_ETH1_IP/'${VAGRANT_ETH1_IP}'/g' /etc/hadoop/conf/core-site.xml
+sudo sed -i 's/VAGRANT_HOST/'${VAGRANT_HOST}'/g' /etc/hadoop/conf/core-site.xml
+cat /etc/hadoop/conf/core-site.xml
 
-cat > /etc/hadoop/conf/hdfs-site.xml << EOF
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-<configuration>
- <property>
-  <name>dfs.namenode.name.dir</name>
-  <value>/hadoop/dfs/nn</value>
- </property>
- <property>
-  <name>dfs.datanode.data.dir</name>
-  <value>/hadoop/dfs/dn</value>
- </property>
- <property>
-  <name>dfs.webhdfs.enabled</name>
-  <value>true</value>
- </property>
- <property>
-  <name>dfs.replication</name>
-  <value>1</value>
- </property>
-</configuration>
-EOF
+sudo cp /vagrant/tmpl/hdfs-site.xml /etc/hadoop/conf/hdfs-site.xml
+sudo sed -i 's/VAGRANT_ETH1_IP/'${VAGRANT_ETH1_IP}'/g' /etc/hadoop/conf/hdfs-site.xml
+sudo sed -i 's/VAGRANT_HOST/'${VAGRANT_HOST}'/g' /etc/hadoop/conf/hdfs-site.xml
+cat /etc/hadoop/conf/hdfs-site.xml
 
-cat > /etc/hadoop/conf/mapred-site.xml << EOF
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-<configuration>
- <property>
-  <name>mapred.job.tracker</name>
-  <value>${VAGRANT_HOST}:8021</value>
- </property>
- <property>
-  <name>mapred.local.dir</name>
-  <value>/hadoop/mapred/local</value>
- </property>
- <property>
-  <name>mapred.system.dir</name>
-  <value>/tmp/mapred/system</value>
- </property>
- <property>
-  <name>mapreduce.jobtracker.staging.root.dir</name>
-  <value>/user</value>
- </property>
- <property>
-  <name>mapred.reduce.tasks</name>
-  <value>1</value>
- </property>
-</configuration>
-EOF
+sudo cp /vagrant/tmpl/mapred-site.xml /etc/hadoop/conf/mapred-site.xml
+sudo sed -i 's/VAGRANT_ETH1_IP/'${VAGRANT_ETH1_IP}'/g' /etc/hadoop/conf/mapred-site.xml
+sudo sed -i 's/VAGRANT_HOST/'${VAGRANT_HOST}'/g' /etc/hadoop/conf/mapred-site.xml
+cat /etc/hadoop/conf/mapred-site.xml
 
 if [ ! -e /hadoop/setup-hdfs ] ; then
+
   echo "**************************************"
   echo "Format HDFS"
   echo "**************************************"
+
   sudo -u hdfs hdfs namenode -format
   touch /hadoop/setup-hdfs
 fi
@@ -144,12 +106,14 @@ fi
 echo "**************************************"
 echo "Starting HDFS"
 echo "**************************************"
+
 sudo service hadoop-hdfs-namenode start
 sudo service hadoop-hdfs-datanode start
 
 echo "**************************************"
 echo "Creating HDFS structure"
 echo "**************************************"
+
 sudo -u hdfs hadoop fs -mkdir /tmp
 sudo -u hdfs hadoop fs -chmod -R 1777 /tmp
 sudo -u hdfs hadoop fs -mkdir -p /var/lib/hadoop-hdfs/cache/mapred/mapred/staging
@@ -163,12 +127,14 @@ sudo -u hdfs hadoop fs -chown vagrant /user/vagrant
 echo "**************************************"
 echo "Starting MapReduce"
 echo "**************************************"
+
 sudo service hadoop-0.20-mapreduce-jobtracker start
 sudo service hadoop-0.20-mapreduce-tasktracker start
 
 echo "**************************************"
 echo "Installing Hadoop ecosystem"
 echo "**************************************"
+
 sudo apt-get install -y sqoop
 sudo apt-get install -y pig
 sudo apt-get install -y hive
@@ -176,6 +142,7 @@ sudo apt-get install -y hive
 echo "**************************************"
 echo "Install MySQL"
 echo "**************************************"
+
 sudo debconf-set-selections << EOF
 mysql-server-5.5 mysql-server/root_password password root
 EOF
@@ -188,15 +155,21 @@ sudo apt-get install -y mysql-server-5.5
 sudo apt-get install -y mysql-client-core-5.5
 sudo chkconfig mysql on
 
+# Bind to external address
+sed -i 's/127\.0\.0\.1/'${VAGRANT_ETH1_IP}'/' /etc/mysql/my.cnf
+sudo service mysql restart
+
 if [ ! -e /hadoop/setup-mysql ] ; then
+
   echo "**************************************"
   echo "Create Hive Metastore Schema"
   echo "**************************************"
+
   touch /hadoop/setup-mysql
   mysql -uroot -proot << EOF
-CREATE USER 'hive'@'localhost' IDENTIFIED BY 'hive';
+CREATE USER 'hive'@'${VAGRANT_ETH1_IP}' IDENTIFIED BY 'hive';
 CREATE DATABASE metastore;
-GRANT ALL ON metastore.* TO 'hive'@'localhost';
+GRANT ALL ON metastore.* TO 'hive'@'${VAGRANT_ETH1_IP}';
 FLUSH PRIVILEGES;
 USE metastore;
 SOURCE /usr/lib/hive/scripts/metastore/upgrade/mysql/hive-schema-0.10.0.mysql.sql;
@@ -204,22 +177,24 @@ EOF
 fi
 
 if [ ! -e /usr/lib/sqoop/lib/mysql-connector-java.jar || ! -e /usr/lib/hive/lib/mysql-connector-java.jar ] ; then
+
   echo "**************************************"
   echo "Download / Install MySQL Driver"
   echo "**************************************"
+
   wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.31.tar.gz
   gunzip mysql-connector-java-5.1.31.tar.gz
   tar xf mysql-connector-java-5.1.31.tar
   JAR=mysql-connector-java-5.1.31/mysql-connector-java-5.1.31-bin.jar
   sudo cp $JAR /usr/lib/sqoop/lib/mysql-connector-java.jar
   sudo cp $JAR /usr/lib/hive/lib/mysql-connector-java.jar
-  if [[ -e mysql-connector-java-5.1.31 ]] ; then
+  if [ -e mysql-connector-java-5.1.31 ] ; then
     sudo rm -rf mysql-connector-java-5.1.31
   fi
-  if [[ -e mysql-connector-java-5.1.31.tar ]] ; then
+  if [ -e mysql-connector-java-5.1.31.tar ] ; then
     sudo rm -rf mysql-connector-java-5.1.31.tar
   fi
-  if [[ -e mysql-connector-java-5.1.31.tar.gz ]] ; then
+  if [ -e mysql-connector-java-5.1.31.tar.gz ] ; then
     sudo rm -rf mysql-connector-java-5.1.31.tar.gz
   fi
 fi
@@ -227,40 +202,11 @@ fi
 echo "**************************************"
 echo "Set Hive configuration"
 echo "**************************************"
-cat > /etc/hive/conf/hive-site.xml << EOF
-<?xml version="1.0"?>
-<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
-<configuration>
- <property>
-  <name>javax.jdo.option.ConnectionURL</name>
-  <value>jdbc:mysql://localhost/metastore</value>
- </property>
- <property>
-  <name>javax.jdo.option.ConnectionDriverName</name>
-  <value>com.mysql.jdbc.Driver</value>
- </property>
- <property>
-  <name>javax.jdo.option.ConnectionUserName</name>
-  <value>hive</value>
- </property>
- <property>
-  <name>javax.jdo.option.ConnectionPassword</name>
-  <value>hive</value>
- </property>
- <property>
-  <name>datanucleus.autoCreateSchema</name>
-  <value>false</value>
- </property>
- <property>
-  <name>datanucleus.fixedDatastore</name>
-  <value>true</value>
- </property>
- <property>
-  <name>hive.metastore.uris</name>
-  <value>thrift://${VAGRANT_ETH1_IP}:9083</value>
- </property>
-</configuration>
-EOF
+
+sudo cp /vagrant/tmpl/hive-site.xml /etc/hive/conf/hive-site.xml
+sudo sed -i 's/VAGRANT_ETH1_IP/'${VAGRANT_ETH1_IP}'/g' /etc/hive/conf/hive-site.xml
+sudo sed -i 's/VAGRANT_HOST/'${VAGRANT_HOST}'/g' /etc/hive/conf/hive-site.xml
+cat /etc/hive/conf/hive-site.xml
 
 echo "**************************************"
 echo "Creating Hive HDFS structure"

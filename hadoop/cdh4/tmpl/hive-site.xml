@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+ <property>
+  <name>javax.jdo.option.ConnectionURL</name>
+  <value>jdbc:mysql://VAGRANT_ETH1_IP/metastore</value>
+ </property>
+ <property>
+  <name>javax.jdo.option.ConnectionDriverName</name>
+  <value>com.mysql.jdbc.Driver</value>
+ </property>
+ <property>
+  <name>javax.jdo.option.ConnectionUserName</name>
+  <value>hive</value>
+ </property>
+ <property>
+  <name>javax.jdo.option.ConnectionPassword</name>
+  <value>hive</value>
+ </property>
+ <property>
+  <name>datanucleus.autoCreateSchema</name>
+  <value>false</value>
+ </property>
+ <property>
+  <name>datanucleus.fixedDatastore</name>
+  <value>true</value>
+ </property>
+ <property>
+  <name>hive.metastore.uris</name>
+  <value>thrift://VAGRANT_ETH1_IP:9083</value>
+ </property>
+</configuration>
