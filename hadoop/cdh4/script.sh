@@ -19,6 +19,7 @@ echo "**************************************"
 
 sudo apt-get install -y software-properties-common
 sudo apt-get install -y apt-file
+sudo apt-get install -y vim
 sudo apt-get install -y python-software-properties
 sudo apt-get install -y curl
 sudo apt-get install -y wget
