@@ -225,6 +225,42 @@ sudo apt-get install -y hive-metastore
 sudo apt-get install -y hive-server2
 
 echo "**************************************"
+echo "Install ZooKeeper-server (for HBase)"
+echo "**************************************"
+
+sudo apt-get install -y zookeeper-server
+sudo service zookeeper-server init --myid=1
+sudo service zookeeper-server start
+
+echo "**************************************"
+echo "Install HBase"
+echo "**************************************"
+
+sudo apt-get install -y hbase
+sudo apt-get install -y hbase-master
+sudo apt-get install -y hbase-regionserver
+sudo apt-get install -y hbase-thrift
+sudo apt-get install -y hbase-rest
+
+echo "**************************************"
+echo "Set HBase configuration"
+echo "**************************************"
+
+sudo cp /vagrant/tmpl/hbase-site.xml /etc/hbase/conf/hbase-site.xml
+sudo sed -i 's/VAGRANT_ETH1_IP/'${VAGRANT_ETH1_IP}'/g' /etc/hbase/conf/hbase-site.xml
+sudo sed -i 's/VAGRANT_HOST/'${VAGRANT_HOST}'/g' /etc/hbase/conf/hbase-site.xml
+cat /etc/hbase/conf/hbase-site.xml
+
+echo "**************************************"
+echo "Creating HBase HDFS structure"
+echo "**************************************"
+
+sudo -u hdfs hadoop fs -mkdir -p /user/hbase
+sudo -u hdfs hadoop fs -chown hbase /user/hbase
+sudo service hbase-master restart
+sudo service hbase-regionserver restart
+
+echo "**************************************"
 echo "All done !"
 echo "**************************************"
 

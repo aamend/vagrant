@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+ <property>
+  <name>hbase.cluster.distributed</name>
+  <value>true</value>
+ </property>
+ <property>
+  <name>hbase.rootdir</name>
+  <value>hdfs://VAGRANT_HOST:8020/user/hbase</value>
+ </property>
+ <property>
+  <name>hbase.rest.port</name>
+  <value>60050</value>
+ </property>
+</configuration>
