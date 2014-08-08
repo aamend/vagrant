@@ -12,7 +12,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     v.customize ["modifyvm", :id, "--memory", "4096"]
   end
 
-  config.vm.network :private_network, ip: "192.168.56.102"
+  config.vm.network :private_network, ip: "192.168.56.101"
 end
 
-# Useful urls:
