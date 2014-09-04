@@ -169,9 +169,79 @@ if [ $VARIABLE_SET -eq 0 ] ; then
   echo "HADOOP_COMMON_HOME=/usr/lib/hadoop" >> /etc/environment
 fi
 
+VARIABLE_SET=`cat /etc/environment | grep HADOOP_CONF_DIR | wc -l`
+if [ $VARIABLE_SET -eq 0 ] ; then
+  echo "HADOOP_CONF_DIR=/etc/hadoop/conf" >> /etc/environment
+fi
+
+VARIABLE_SET=`cat /etc/environment | grep YARN_CONF_DIR | wc -l`
+if [ $VARIABLE_SET -eq 0 ] ; then
+  echo "YARN_CONF_DIR=/etc/hadoop/conf" >> /etc/environment
+fi
+
+
 sudo service hadoop-yarn-resourcemanager start
 sudo service hadoop-yarn-nodemanager start
 sudo service hadoop-mapreduce-historyserver start
+
+echo "**************************************"
+echo "Install Hbase / Zookeeper packages"
+echo "**************************************"
+
+sudo apt-get install -y zookeeper
+sudo apt-get install -y zookeeper-server
+sudo apt-get install -y hbase-master
+sudo apt-get install -y hbase-regionserver
+sudo apt-get install -y hbase-thrift
+sudo apt-get install -y hbase-rest
+
+echo "**************************************"
+echo "Set HBase configuration"
+echo "**************************************"
+
+sudo cp /vagrant/tmpl/hbase-site.xml /etc/hbase/conf/hbase-site.xml
+sudo sed -i 's/VAGRANT_ETH1_IP/'${VAGRANT_ETH1_IP}'/g' /etc/hbase/conf/hbase-site.xml
+sudo sed -i 's/VAGRANT_HOST/'${VAGRANT_HOST}'/g' /etc/hbase/conf/hbase-site.xml
+cat /etc/hbase/conf/hbase-site.xml
+
+VARIABLE_SET=`cat /etc/environment | grep ZOO_LOG_DIR | wc -l`
+if [ $VARIABLE_SET -eq 0 ] ; then
+  echo "ZOO_LOG_DIR=/var/log/zookeeper" >> /etc/environment
+fi
+
+sudo service zookeeper-server init --myid=1
+sudo service zookeeper-server start
+
+# Issue with variable overridden by zookeeper env
+sudo mv /etc/zookeeper/conf/zookeeper-env.sh /etc/zookeeper/conf/zookeeper-env.sh.bak
+
+echo "**************************************"
+echo "Creating HBase HDFS structure"
+echo "**************************************"
+
+sudo -u hdfs hadoop fs -mkdir -p /user/hbase
+sudo -u hdfs hadoop fs -chown hbase /user/hbase
+sudo service hbase-master restart
+sudo service hbase-regionserver restart
+
+echo "**************************************"
+echo "Installing scala / spark"
+echo "**************************************"
+
+wget http://www.scala-lang.org/files/archive/scala-2.10.1.tgz
+sudo tar xvf scala-2.10.1.tgz
+sudo mv scala-2.10.1 /usr/lib
+sudo ln -s /usr/lib/scala-2.10.1/ /usr/lib/scala
+
+wget wget http://public-repo-1.hortonworks.com/spark/centos6/tar/spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563.tgz
+sudo tar -zxf spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563.tgz
+sudo mv spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563 /usr/lib
+sudo ln -s /usr/lib/spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563 /usr/lib/spark
+
+VARIABLE_SET=`cat /etc/environment | grep SCALA_HOME | grep -v PATH | wc -l`
+if [ $VARIABLE_SET -eq 0 ] ; then
+  echo "SCALA_HOME=/usr/lib/scala" >> /etc/environment
+fi
 
 echo "**************************************"
 echo "All done !"
