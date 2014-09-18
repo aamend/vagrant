@@ -49,6 +49,7 @@ echo "**************************************"
 
 wget http://www.magnatempusgroup.net/ftphost/releases/MTG-0.3.1/ubuntu/pool/contrib/b/bigtop-utils/bigtop-utils_0.3.1.MTG-1_all.deb
 sudo dpkg -i bigtop-utils_0.3.1.MTG-1_all.deb
+sudo rm bigtop-utils_0.3.1.MTG-1_all.deb
 
 sudo apt-get update
 sudo apt-get install -y oracle-j2sdk1.6
@@ -232,11 +233,13 @@ echo "**************************************"
 wget http://www.scala-lang.org/files/archive/scala-2.10.1.tgz
 sudo tar xvf scala-2.10.1.tgz
 sudo mv scala-2.10.1 /usr/lib
+sudo rm scala-2.10.1.tgz
 sudo ln -s /usr/lib/scala-2.10.1/ /usr/lib/scala
 
 wget wget http://public-repo-1.hortonworks.com/spark/centos6/tar/spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563.tgz
 sudo tar -zxf spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563.tgz
 sudo mv spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563 /usr/lib
+sudo rm spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563.tgz
 sudo ln -s /usr/lib/spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563 /usr/lib/spark
 
 VARIABLE_SET=`cat /etc/environment | grep SCALA_HOME | grep -v PATH | wc -l`
@@ -251,6 +254,7 @@ echo "**************************************"
 sudo apt-get install openjdk-7-jre-headless -y
 wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.1.1.deb
 sudo dpkg -i elasticsearch-1.1.1.deb
+sudo rm elasticsearch-1.1.1.deb
 sudo service elasticsearch start
 sudo update-rc.d elasticsearch defaults 95 10
 
@@ -263,7 +267,9 @@ sudo cp /etc/apache2/sites-available/default /etc/apache2/sites-available/kibana
 sudo mkdir -p /var/www/kibana
 wget http://download.elasticsearch.org/kibana/kibana/kibana-latest.zip
 unzip kibana-latest.zip
-sudo mv kibana-latest /var/www/kibana
+sudo rm kibana-latest.zip
+sudo mv kibana-latest/* /var/www/kibana
+sudo rm -r kibana-latest
 sudo a2ensite kibana
 sudo /etc/init.d/apache2 restart
 
