@@ -17,6 +17,7 @@ echo "**************************************"
 echo "Install common packages"
 echo "**************************************"
 
+sudo apt-get install -y unzip
 sudo apt-get install -y software-properties-common
 sudo apt-get install -y apt-file
 sudo apt-get install -y vim
@@ -242,6 +243,29 @@ VARIABLE_SET=`cat /etc/environment | grep SCALA_HOME | grep -v PATH | wc -l`
 if [ $VARIABLE_SET -eq 0 ] ; then
   echo "SCALA_HOME=/usr/lib/scala" >> /etc/environment
 fi
+
+echo "**************************************"
+echo "Installing ElasticSearch"
+echo "**************************************"
+
+sudo apt-get install openjdk-7-jre-headless -y
+wget https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.1.1.deb
+sudo dpkg -i elasticsearch-1.1.1.deb
+sudo service elasticsearch start
+sudo update-rc.d elasticsearch defaults 95 10
+
+echo "**************************************"
+echo "Installing Kibana"
+echo "**************************************"
+
+sudo apt-get install apache2 -y
+sudo cp /etc/apache2/sites-available/default /etc/apache2/sites-available/kibana
+sudo mkdir -p /var/www/kibana
+wget http://download.elasticsearch.org/kibana/kibana/kibana-latest.zip
+unzip kibana-latest.zip
+sudo mv kibana-latest /var/www/kibana
+sudo a2ensite kibana
+sudo /etc/init.d/apache2 restart
 
 echo "**************************************"
 echo "All done !"
