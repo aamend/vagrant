@@ -236,11 +236,11 @@ sudo mv scala-2.10.1 /usr/lib
 sudo rm scala-2.10.1.tgz
 sudo ln -s /usr/lib/scala-2.10.1/ /usr/lib/scala
 
-wget wget http://public-repo-1.hortonworks.com/spark/centos6/tar/spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563.tgz
-sudo tar -zxf spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563.tgz
-sudo mv spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563 /usr/lib
-sudo rm spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563.tgz
-sudo ln -s /usr/lib/spark-1.0.1.2.1.3.0-563-bin-2.4.0.2.1.3.0-563 /usr/lib/spark
+wget http://d3kbcqa49mib13.cloudfront.net/spark-1.1.0-bin-hadoop2.4.tgz
+sudo tar -zxf spark-1.1.0-bin-hadoop2.4.tgz
+sudo mv spark-1.1.0-bin-hadoop2.4 /usr/lib
+sudo rm spark-1.1.0-bin-hadoop2.4.tgz
+sudo ln -s /usr/lib/spark-1.1.0-bin-hadoop2.4 /usr/lib/spark
 
 VARIABLE_SET=`cat /etc/environment | grep SCALA_HOME | grep -v PATH | wc -l`
 if [ $VARIABLE_SET -eq 0 ] ; then
