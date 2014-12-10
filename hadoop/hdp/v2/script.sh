@@ -34,7 +34,7 @@ echo "**************************************"
 echo "Install Hortonworks repository"
 echo "**************************************"
 
-wget http://public-repo-1.hortonworks.com/HDP/ubuntu12/2.x/hdp.list -O /etc/apt/sources.list.d/hdp.list
+wget http://public-repo-1.hortonworks.com/HDP/ubuntu12/2.1.5.0/hdp.list -O /etc/apt/sources.list.d/hdp.list  
 sudo gpg --keyserver pgp.mit.edu --recv-keys B9733A7A07513CAD
 sudo gpg -a --export 07513CAD | apt-key add -
 
