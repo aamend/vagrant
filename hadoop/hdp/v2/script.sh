@@ -13,13 +13,13 @@ echo "**************************************"
 echo "Install common packages"
 echo "**************************************"
 
-apt-get install -y unzip
-apt-get install -y software-properties-common
-apt-get install -y apt-file
-apt-get install -y vim
-apt-get install -y python-software-properties
-apt-get install -y curl
-apt-get install -y wget
+sudo apt-get install -y unzip
+sudo apt-get install -y software-properties-common
+sudo apt-get install -y apt-file
+sudo apt-get install -y vim
+sudo apt-get install -y python-software-properties
+sudo apt-get install -y curl
+sudo apt-get install -y wget
 
 echo "**************************************"
 echo "Install SSH key"
@@ -35,26 +35,26 @@ echo "Install Hortonworks repository"
 echo "**************************************"
 
 wget http://public-repo-1.hortonworks.com/HDP/ubuntu12/2.x/hdp.list -O /etc/apt/sources.list.d/hdp.list
-gpg --keyserver pgp.mit.edu --recv-keys B9733A7A07513CAD
-gpg -a --export 07513CAD | apt-key add -
+sudo gpg --keyserver pgp.mit.edu --recv-keys B9733A7A07513CAD
+sudo gpg -a --export 07513CAD | apt-key add -
 
 echo "**************************************"
 echo "Install Hadoop packages"
 echo "**************************************"
 
 wget http://www.magnatempusgroup.net/ftphost/releases/MTG-0.3.1/ubuntu/pool/contrib/b/bigtop-utils/bigtop-utils_0.3.1.MTG-1_all.deb
-dpkg -i bigtop-utils_0.3.1.MTG-1_all.deb
+sudo dpkg -i bigtop-utils_0.3.1.MTG-1_all.deb
 rm bigtop-utils_0.3.1.MTG-1_all.deb
 
-apt-get update
-apt-get install -y openjdk-7-jdk
-apt-get install -y openjdk-7-jre-headless
-apt-get install -y hadoop-hdfs-namenode
-apt-get install -y hadoop-hdfs-datanode
-apt-get install -y hadoop-yarn-resourcemanager
-apt-get install -y hadoop-yarn-nodemanager
-apt-get install -y hadoop-mapreduce-historyserver
-apt-get install -y hadoop-yarn-proxyserver
+sudo apt-get update
+sudo apt-get install -y openjdk-7-jdk
+sudo apt-get install -y openjdk-7-jre-headless
+sudo apt-get install -y --force-yes hadoop-hdfs-namenode
+sudo apt-get install -y --force-yes hadoop-hdfs-datanode
+sudo apt-get install -y --force-yes hadoop-yarn-resourcemanager
+sudo apt-get install -y --force-yes hadoop-yarn-nodemanager
+sudo apt-get install -y --force-yes hadoop-mapreduce-historyserver
+sudo apt-get install -y --force-yes hadoop-yarn-proxyserver
 
 echo "JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64" >> /etc/environment
 export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
@@ -63,11 +63,11 @@ echo "**************************************"
 echo "Create Hadoop disk /hadoop"
 echo "**************************************"
 
-mkdir -p /hadoop/dfs/{nn,dn}
-chown -R hdfs:hdfs /hadoop/dfs
-chmod 700 /hadoop/dfs
-mkdir -p /hadoop/yarn/{local,logs}
-chown -R yarn:yarn /hadoop/yarn
+sudo mkdir -p /hadoop/dfs/{nn,dn}
+sudo chown -R hdfs:hdfs /hadoop/dfs
+sudo chmod 700 /hadoop/dfs
+sudo mkdir -p /hadoop/yarn/{local,logs}
+sudo chown -R yarn:yarn /hadoop/yarn
 
 echo "**************************************"
 echo "Set Hadoop configuration"
@@ -111,32 +111,32 @@ echo "**************************************"
 echo "Format HDFS"
 echo "**************************************"
 
--u hdfs hdfs namenode -format
+sudo -u hdfs hdfs namenode -format
 
 echo "**************************************"
 echo "Starting HDFS"
 echo "**************************************"
 
-service hadoop-hdfs-namenode start
-service hadoop-hdfs-datanode start
+sudo service hadoop-hdfs-namenode start
+sudo service hadoop-hdfs-datanode start
 
 echo "**************************************"
 echo "Creating HDFS structure"
 echo "**************************************"
 
--u hdfs hadoop fs -mkdir /tmp 
--u hdfs hadoop fs -mkdir /user
--u hdfs hadoop fs -mkdir /var
--u hdfs hadoop fs -mkdir /user/vagrant
--u hdfs hadoop fs -mkdir /user/history
--u hdfs hadoop fs -mkdir /var/log
--u hdfs hadoop fs -mkdir /var/log/hadoop-yarn
+sudo -u hdfs hadoop fs -mkdir /tmp 
+sudo -u hdfs hadoop fs -mkdir /user
+sudo -u hdfs hadoop fs -mkdir /var
+sudo -u hdfs hadoop fs -mkdir /user/vagrant
+sudo -u hdfs hadoop fs -mkdir /user/history
+sudo -u hdfs hadoop fs -mkdir /var/log
+sudo -u hdfs hadoop fs -mkdir /var/log/hadoop-yarn
 
--u hdfs hadoop fs -chmod -R 1777 /tmp
--u hdfs hadoop fs -chmod -R 1777 /user/history
--u hdfs hadoop fs -chown -R yarn:mapred /var/log/hadoop-yarn
--u hdfs hadoop fs -chown -R vagrant /user/vagrant
--u hdfs hadoop fs -chown -R yarn /user/history
+sudo -u hdfs hadoop fs -chmod -R 1777 /tmp
+sudo -u hdfs hadoop fs -chmod -R 1777 /user/history
+sudo -u hdfs hadoop fs -chown -R yarn:mapred /var/log/hadoop-yarn
+sudo -u hdfs hadoop fs -chown -R vagrant /user/vagrant
+sudo -u hdfs hadoop fs -chown -R yarn /user/history
 
 echo "**************************************"
 echo "Starting MapReduce"
@@ -156,17 +156,17 @@ export HADOOP_COMMON_HOME=/usr/lib/hadoop
 export HADOOP_CONF_DIR=/etc/hadoop/conf
 export YARN_CONF_DIR=/etc/hadoop/conf
 
-service hadoop-yarn-resourcemanager start
-service hadoop-yarn-nodemanager start
-service hadoop-mapreduce-historyserver start
+sudo service hadoop-yarn-resourcemanager start
+sudo service hadoop-yarn-nodemanager start
+sudo service hadoop-mapreduce-historyserver start
 
 echo "**************************************"
 echo "Installing Hadoop ecosystem"
 echo "**************************************"
 
-apt-get install -y sqoop
-apt-get install -y pig
-apt-get install -y hive
+sudo apt-get install -y --force-yes sqoop
+sudo apt-get install -y --force-yes pig
+sudo apt-get install -y --force-yes hive
 
 echo "**************************************"
 echo "Install MySQL"
@@ -180,13 +180,13 @@ debconf-set-selections << EOF
 mysql-server-5.5 mysql-server/root_password_again password root
 EOF
 
-apt-get install -y mysql-server-5.5
-apt-get install -y mysql-client-core-5.5
-chkconfig mysql on
+sudo apt-get install -y --force-yes mysql-server-5.5
+sudo apt-get install -y --force-yes mysql-client-core-5.5
+sudo chkconfig mysql on
 
 # Bind to external address
 sed -i 's/127\.0\.0\.1/'${VAGRANT_ETH1_IP}'/' /etc/mysql/my.cnf
-service mysql restart
+sudo service mysql restart
 
 echo "**************************************"
 echo "Create Hive Metastore Schema"
@@ -198,7 +198,7 @@ CREATE DATABASE metastore;
 GRANT ALL ON metastore.* TO 'hive'@'${VAGRANT_ETH1_IP}';
 FLUSH PRIVILEGES;
 USE metastore;
-SOURCE /usr/lib/hive/scripts/metastore/upgrade/mysql/hive-schema-0.10.0.mysql.sql;
+SOURCE /usr/lib/hive/scripts/metastore/upgrade/mysql/hive-schema-0.13.0.mysql.sql;
 EOF
 
 echo "**************************************"
@@ -226,29 +226,29 @@ echo "**************************************"
 echo "Creating Hive HDFS structure"
 echo "**************************************"
 
--u hdfs hadoop fs -mkdir /user/hive
--u hdfs hadoop fs -mkdir /user/hive/warehouse
+sudo -u hdfs hadoop fs -mkdir /user/hive
+sudo -u hdfs hadoop fs -mkdir /user/hive/warehouse
 
--u hdfs hadoop fs -chown hive /user/hive/warehouse
--u hdfs hadoop fs -chmod -R 1777 /user/hive/warehouse
+sudo -u hdfs hadoop fs -chown hive /user/hive/warehouse
+sudo -u hdfs hadoop fs -chmod -R 1777 /user/hive/warehouse
 
 echo "**************************************"
 echo "Install Hive Server + Metastore"
 echo "**************************************"
 
-apt-get install -y hive-metastore
-apt-get install -y hive-server2
+sudo apt-get install -y --force-yes hive-metastore
+sudo apt-get install -y --force-yes hive-server2
 
 echo "**************************************"
 echo "Install Hbase / Zookeeper packages"
 echo "**************************************"
 
-apt-get install -y zookeeper
-apt-get install -y zookeeper-server
-apt-get install -y hbase-master
-apt-get install -y hbase-regionserver
-apt-get install -y hbase-thrift
-apt-get install -y hbase-rest
+sudo apt-get install -y --force-yes zookeeper
+sudo apt-get install -y --force-yes zookeeper-server
+sudo apt-get install -y --force-yes hbase-master
+sudo apt-get install -y --force-yes hbase-regionserver
+sudo apt-get install -y --force-yes hbase-thrift
+sudo apt-get install -y --force-yes hbase-rest
 
 echo "**************************************"
 echo "Set HBase configuration"
@@ -261,8 +261,8 @@ sed -i 's/VAGRANT_HOST/'${VAGRANT_HOST}'/g' /etc/hbase/conf/hbase-site.xml
 echo "ZOO_LOG_DIR=/var/log/zookeeper" >> /etc/environment
 export ZOO_LOG_DIR=/var/log/zookeeper
 
-service zookeeper-server init --myid=1
-service zookeeper-server start
+sudo service zookeeper-server init --myid=1
+sudo service zookeeper-server start
 
 # Issue with variable overridden by zookeeper env
 mv /etc/zookeeper/conf/zookeeper-env.sh /etc/zookeeper/conf/zookeeper-env.sh.bak
@@ -271,10 +271,10 @@ echo "**************************************"
 echo "Creating HBase HDFS structure"
 echo "**************************************"
 
--u hdfs hadoop fs -mkdir -p /user/hbase
--u hdfs hadoop fs -chown hbase /user/hbase
-service hbase-master restart
-service hbase-regionserver restart
+sudo -u hdfs hadoop fs -mkdir -p /user/hbase
+sudo -u hdfs hadoop fs -chown hbase /user/hbase
+sudo service hbase-master restart
+sudo service hbase-regionserver restart
 
 echo "**************************************"
 echo "Installing scala / spark"
@@ -335,7 +335,7 @@ echo "**************************************"
 echo "Installing Kibana"
 echo "**************************************"
 
-apt-get install apache2 -y
+sudo apt-get install apache2 -y --force-yes
 cp /etc/apache2/sites-available/default /etc/apache2/sites-available/kibana
 mkdir -p /var/www/kibana
 wget http://download.elasticsearch.org/kibana/kibana/kibana-latest.zip
